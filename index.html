@@ -13,24 +13,31 @@
         .reset-btn { background-color: #e74c3c; color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 16px; font-weight: bold; cursor: pointer; }
         
         /* 主体布局：三行 */
-        .board { flex: 1; display: flex; flex-direction: column; gap: 8px; padding: 8px; padding-bottom: 15px; }
+        .board { flex: 1; display: flex; flex-direction: column; gap: 15px; padding: 12px; padding-bottom: 20px; }
         
-        .player { background-color: rgba(255,255,255,0.05); border-radius: 12px; padding: 10px; display: flex; flex-direction: column; border: 1px solid #34495e; flex: 1; justify-content: center;}
+        /* 玩家区块增强立体感和分隔感 */
+        .player { background-color: rgba(255,255,255,0.08); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; border: 1px solid #4a6278; flex: 1; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.4); }
         
-        /* 玩家名字 */
-        .player-name { font-weight: bold; margin-bottom: 8px; font-size: 18px; color: #ecf0f1; text-align: center; background-color: #34495e; border-radius: 6px; padding: 4px 0; }
+        /* 玩家名字 (重点修改：不同颜色区分，更显眼) */
+        .player-name { font-weight: bold; margin-bottom: 10px; font-size: 20px; color: #ffffff; text-align: center; border-radius: 6px; padding: 6px 0; letter-spacing: 2px;}
+        /* 对家 - 红色 */
+        .top-player .player-name { background-color: #e74c3c; box-shadow: 0 2px 5px rgba(231, 76, 60, 0.4);}
+        /* 上家 - 绿色 */
+        .left-player .player-name { background-color: #27ae60; box-shadow: 0 2px 5px rgba(39, 174, 96, 0.4);}
+        /* 下家 - 橙色 */
+        .right-player .player-name { background-color: #f39c12; box-shadow: 0 2px 5px rgba(243, 156, 18, 0.4);}
         
         /* 卡片容器：横向排满 */
-        .cards-container { display: flex; justify-content: space-between; gap: 6px; }
+        .cards-container { display: flex; justify-content: space-between; gap: 8px; }
         
         /* 单张卡片样式 */
-        .card { background-color: #2c3e50; border-radius: 8px; display: flex; flex-direction: column; flex: 1; cursor: pointer; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.2); min-width: 0;}
+        .card { background-color: #2c3e50; border-radius: 8px; display: flex; flex-direction: column; flex: 1; cursor: pointer; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.3); min-width: 0; border: 1px solid #1a252f;}
         .card:active { transform: scale(0.95); }
         
         /* 卡片文字（牌型） */
         .card .label { font-size: 16px; font-weight: bold; text-align: center; padding: 8px 0; background-color: #34495e; color: #ecf0f1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
         
-        /* 数字显示区（核心放大区域） */
+        /* 数字显示区 */
         .card .status { font-size: 40px; font-weight: bold; text-align: center; padding: 10px 0; color: #f1c40f; flex: 1; display: flex; justify-content: center; align-items: center; }
         
         /* "无" 按钮区 */
@@ -38,7 +45,7 @@
         .card .btn-pass:active { background-color: #e74c3c; }
         
         /* 状态颜色区分 */
-        .card.status-0 .status { color: #7f8c8d; font-size: 30px; font-weight: normal;} /* 无(0) 显示灰色 */
+        .card.status-0 .status { color: #95a5a6; font-size: 30px; font-weight: normal;} /* 无(0) 显示灰色 */
         .card.status-num .status { color: #2ecc71; } /* 出牌次数 显示绿色 */
 
     </style>
@@ -94,7 +101,7 @@
         const types = ['big', 'small', 'single', 'pair', 'triple'];
 
         // 初始化数据结构。'-'代表未操作, '0'代表无(不出), 数字代表出牌次数
-        let data = JSON.parse(localStorage.getItem('guandanDataV4')) || {}; // 升级了版本号，防止旧数据干扰新样式
+        let data = JSON.parse(localStorage.getItem('guandanDataV5')) || {}; // 升级版本号防旧数据干扰
 
         function initData() {
             let obj = {};
@@ -131,14 +138,13 @@
 
         // 保存并渲染
         function saveAndRender() {
-            localStorage.setItem('guandanDataV4', JSON.stringify(data));
+            localStorage.setItem('guandanDataV5', JSON.stringify(data));
             render();
         }
 
         // 点击卡片主体：数字加1
         document.querySelectorAll('.card').forEach(card => {
             card.addEventListener('click', function(e) {
-                // 如果点的是“无”按钮，不触发加1
                 if (e.target.classList.contains('btn-pass')) return;
 
                 const p = this.dataset.player;
@@ -153,7 +159,7 @@
                 saveAndRender();
             });
 
-            // 长按卡片主体：数字减1 (防误触)
+            // 长按卡片主体：数字减1
             let timer;
             card.addEventListener('touchstart', function(e) {
                 if (e.target.classList.contains('btn-pass')) return;
@@ -166,7 +172,7 @@
                         data[p][t] = num > 1 ? num - 1 : '-';
                         saveAndRender();
                     }
-                }, 500); // 按住半秒钟触发
+                }, 500);
             });
             card.addEventListener('touchend', () => clearTimeout(timer));
             card.addEventListener('touchmove', () => clearTimeout(timer));
@@ -175,13 +181,13 @@
         // 点击“无”：变成0
         document.querySelectorAll('.btn-pass').forEach(btn => {
             btn.addEventListener('click', function(e) {
-                e.stopPropagation(); // 阻止触发卡片加1
+                e.stopPropagation(); 
                 const card = this.parentElement;
                 const p = card.dataset.player;
                 const t = card.dataset.type;
                 
                 if (data[p][t] === '0') {
-                    data[p][t] = '-'; // 再点一下取消
+                    data[p][t] = '-'; 
                 } else {
                     data[p][t] = '0';
                 }
