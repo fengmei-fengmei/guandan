@@ -26,10 +26,10 @@
         /* 玩家名字 */
         .player-name { font-weight: bold; margin-bottom: 6px; font-size: 15px; color: #fff; text-align: center; border-radius: 4px; padding: 3px 0; letter-spacing: 1px;}
         .p-top .player-name { background-color: #e74c3c; } /* 对家 - 红 */
-        .p-left1 .player-name { background-color: #27ae60; } /* 上家 - 绿 */
-        .p-left2 .player-name { background-color: #16a085; } /* 对家上家 - 深绿 */
-        .p-right1 .player-name { background-color: #f39c12; } /* 下家 - 橙 */
-        .p-right2 .player-name { background-color: #d35400; } /* 对家下家 - 深橙 */
+        .p-left1 .player-name { background-color: #27ae60; } /* 上1 - 绿 */
+        .p-left2 .player-name { background-color: #16a085; } /* 上2 - 深绿 */
+        .p-right1 .player-name { background-color: #f39c12; } /* 下1 - 橙 */
+        .p-right2 .player-name { background-color: #d35400; } /* 下2 - 深橙 */
         
         /* 卡片容器 */
         .cards-container { display: flex; justify-content: space-between; gap: 4px; }
@@ -78,9 +78,9 @@
             </div>
         </div>
 
-        <!-- 左侧上方：上家 -->
+        <!-- 左侧上方：上1 -->
         <div class="player p-left1" style="grid-column: 1; grid-row: 2;">
-            <div class="player-name">上家</div>
+            <div class="player-name">上1</div>
             <div class="cards-container">
                 <div class="card" data-player="left1" data-type="big"><div class="label">大王</div><div class="status">-</div><div class="btn-pass">无</div></div>
                 <div class="card" data-player="left1" data-type="small"><div class="label">小王</div><div class="status">-</div><div class="btn-pass">无</div></div>
@@ -90,9 +90,9 @@
             </div>
         </div>
 
-        <!-- 右侧上方：下家 -->
+        <!-- 右侧上方：下1 -->
         <div class="player p-right1" style="grid-column: 2; grid-row: 2;">
-            <div class="player-name">下家</div>
+            <div class="player-name">下1</div>
             <div class="cards-container">
                 <div class="card" data-player="right1" data-type="big"><div class="label">大王</div><div class="status">-</div><div class="btn-pass">无</div></div>
                 <div class="card" data-player="right1" data-type="small"><div class="label">小王</div><div class="status">-</div><div class="btn-pass">无</div></div>
@@ -102,9 +102,9 @@
             </div>
         </div>
 
-        <!-- 左侧下方：对家上家 -->
+        <!-- 左侧下方：上2 -->
         <div class="player p-left2" style="grid-column: 1; grid-row: 3;">
-            <div class="player-name">对家上家</div>
+            <div class="player-name">上2</div>
             <div class="cards-container">
                 <div class="card" data-player="left2" data-type="big"><div class="label">大王</div><div class="status">-</div><div class="btn-pass">无</div></div>
                 <div class="card" data-player="left2" data-type="small"><div class="label">小王</div><div class="status">-</div><div class="btn-pass">无</div></div>
@@ -114,9 +114,9 @@
             </div>
         </div>
 
-        <!-- 右侧下方：对家下家 -->
+        <!-- 右侧下方：下2 -->
         <div class="player p-right2" style="grid-column: 2; grid-row: 3;">
-            <div class="player-name">对家下家</div>
+            <div class="player-name">下2</div>
             <div class="cards-container">
                 <div class="card" data-player="right2" data-type="big"><div class="label">大王</div><div class="status">-</div><div class="btn-pass">无</div></div>
                 <div class="card" data-player="right2" data-type="small"><div class="label">小王</div><div class="status">-</div><div class="btn-pass">无</div></div>
@@ -131,7 +131,7 @@
         const players = ['top', 'left1', 'right1', 'left2', 'right2'];
         const types = ['big', 'small', 'single', 'pair', 'triple'];
 
-        let data = JSON.parse(localStorage.getItem('guandanDataV8')) || {}; 
+        let data = JSON.parse(localStorage.getItem('guandanDataV10')) || {}; 
 
         function initData() {
             let obj = {};
@@ -159,7 +159,7 @@
         }
 
         function saveAndRender() {
-            localStorage.setItem('guandanDataV8', JSON.stringify(data));
+            localStorage.setItem('guandanDataV10', JSON.stringify(data));
             render();
         }
 
