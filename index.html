@@ -3,105 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>掼蛋记牌器</title>
+    <title>四人掼蛋记牌器</title>
     <style>
         body { margin: 0; padding: 0; background-color: #1a252f; color: white; font-family: sans-serif; display: flex; flex-direction: column; height: 100vh; user-select: none; touch-action: manipulation; }
         
-        /* 顶部标题和清零按钮 */
-        .header { text-align: center; padding: 10px; display: flex; justify-content: space-between; align-items: center; padding-left: 15px; padding-right: 15px;}
-        .title { font-size: 20px; font-weight: bold; color: #f1c40f; }
-        .reset-btn { background-color: #e74c3c; color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 16px; font-weight: bold; cursor: pointer; }
+        /* 顶部栏 */
+        .header { text-align: center; padding: 8px 10px; display: flex; justify-content: space-between; align-items: center; background-color: #2c3e50; box-shadow: 0 2px 5px rgba(0,0,0,0.3); z-index: 10;}
+        .title { font-size: 18px; font-weight: bold; color: #f1c40f; }
+        .nav-btn { background-color: #3498db; color: white; border: none; padding: 6px 12px; border-radius: 20px; font-size: 14px; font-weight: bold; text-decoration: none; cursor: pointer; margin-right: 10px;}
+        .reset-btn { background-color: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 20px; font-size: 14px; font-weight: bold; cursor: pointer; }
         
-        /* 主体布局：三行 */
-        .board { flex: 1; display: flex; flex-direction: column; gap: 15px; padding: 12px; padding-bottom: 20px; }
+        /* 主体布局 (四人版新布局) */
+        .board { flex: 1; display: flex; flex-direction: column; gap: 10px; padding: 10px; padding-bottom: 15px; }
         
-        /* 玩家区块增强立体感和分隔感 */
-        .player { background-color: rgba(255,255,255,0.08); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; border: 1px solid #4a6278; flex: 1; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.4); }
+        /* 第一行：对家 (占满全宽) */
+        .row-top { flex: 1; display: flex; }
         
-        /* 玩家名字 (重点修改：不同颜色区分，更显眼) */
-        .player-name { font-weight: bold; margin-bottom: 10px; font-size: 20px; color: #ffffff; text-align: center; border-radius: 6px; padding: 6px 0; letter-spacing: 2px;}
-        /* 对家 - 红色 */
-        .top-player .player-name { background-color: #e74c3c; box-shadow: 0 2px 5px rgba(231, 76, 60, 0.4);}
-        /* 上家 - 绿色 */
-        .left-player .player-name { background-color: #27ae60; box-shadow: 0 2px 5px rgba(39, 174, 96, 0.4);}
-        /* 下家 - 橙色 */
-        .right-player .player-name { background-color: #f39c12; box-shadow: 0 2px 5px rgba(243, 156, 18, 0.4);}
+        /* 第二行：上家、下家 (左右平分) */
+        .row-bottom { flex: 1; display: flex; gap: 10px; }
+        .row-bottom .player { flex: 1; } /* 平分宽度 */
         
-        /* 卡片容器：横向排满 */
-        .cards-container { display: flex; justify-content: space-between; gap: 8px; }
+        /* 玩家区块 */
+        .player { background-color: rgba(255,255,255,0.08); border-radius: 10px; padding: 10px; display: flex; flex-direction: column; border: 1px solid #4a6278; justify-content: center; box-shadow: 0 4px 8px rgba(0,0,0,0.4); min-width: 0;}
         
-        /* 单张卡片样式 */
-        .card { background-color: #2c3e50; border-radius: 8px; display: flex; flex-direction: column; flex: 1; cursor: pointer; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.3); min-width: 0; border: 1px solid #1a252f;}
+        /* 玩家名字 */
+        .player-name { font-weight: bold; margin-bottom: 8px; font-size: 18px; color: #fff; text-align: center; border-radius: 6px; padding: 4px 0; letter-spacing: 2px;}
+        .top-player .player-name { background-color: #e74c3c; } /* 对家 - 红 */
+        .left-player .player-name { background-color: #27ae60; } /* 上家 - 绿 */
+        .right-player .player-name { background-color: #f39c12; } /* 下家 - 橙 */
+        
+        /* 卡片容器 */
+        .cards-container { display: flex; justify-content: space-between; gap: 6px; }
+        
+        /* 单张卡片 */
+        .card { background-color: #2c3e50; border-radius: 8px; display: flex; flex-direction: column; flex: 1; cursor: pointer; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.3); min-width: 0; border: 1px solid #1a252f;}
         .card:active { transform: scale(0.95); }
         
-        /* 卡片文字（牌型） */
-        .card .label { font-size: 16px; font-weight: bold; text-align: center; padding: 8px 0; background-color: #34495e; color: #ecf0f1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+        .card .label { font-size: 15px; font-weight: bold; text-align: center; padding: 6px 0; background-color: #34495e; color: #ecf0f1; white-space: nowrap; overflow: hidden;}
         
-        /* 数字显示区 */
-        .card .status { font-size: 40px; font-weight: bold; text-align: center; padding: 10px 0; color: #f1c40f; flex: 1; display: flex; justify-content: center; align-items: center; }
+        /* 数字区 */
+        .card .status { font-size: 38px; font-weight: bold; text-align: center; padding: 8px 0; color: #f1c40f; flex: 1; display: flex; justify-content: center; align-items: center; }
         
-        /* "无" 按钮区 */
-        .card .btn-pass { font-size: 16px; font-weight: bold; text-align: center; background-color: #7f8c8d; color: white; padding: 8px 0; }
+        /* "无" 按钮 */
+        .card .btn-pass { font-size: 15px; font-weight: bold; text-align: center; background-color: #7f8c8d; color: white; padding: 6px 0; }
         .card .btn-pass:active { background-color: #e74c3c; }
         
-        /* 状态颜色区分 */
-        .card.status-0 .status { color: #95a5a6; font-size: 30px; font-weight: normal;} /* 无(0) 显示灰色 */
-        .card.status-num .status { color: #2ecc71; } /* 出牌次数 显示绿色 */
+        /* 状态颜色 */
+        .card.status-0 .status { color: #95a5a6; font-size: 28px; font-weight: normal;}
+        .card.status-num .status { color: #2ecc71; }
 
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="title">掼蛋记牌器</div>
-        <button class="reset-btn" onclick="resetAll()">全部清零</button>
+        <div class="title">四人记牌器</div>
+        <div>
+            <a href="./six.html" class="nav-btn">切到六人</a>
+            <button class="reset-btn" onclick="resetAll()">清零</button>
+        </div>
     </div>
 
     <div class="board">
-        <!-- 对家 -->
-        <div class="player top-player">
-            <div class="player-name">对家</div>
-            <div class="cards-container">
-                <div class="card" data-player="top" data-type="big"><div class="label">大王</div><div class="status">-</div><div class="btn-pass">无</div></div>
-                <div class="card" data-player="top" data-type="small"><div class="label">小王</div><div class="status">-</div><div class="btn-pass">无</div></div>
-                <div class="card" data-player="top" data-type="single"><div class="label">单牌</div><div class="status">-</div><div class="btn-pass">无</div></div>
-                <div class="card" data-player="top" data-type="pair"><div class="label">对子</div><div class="status">-</div><div class="btn-pass">无</div></div>
-                <div class="card" data-player="top" data-type="triple"><div class="label">三张</div><div class="status">-</div><div class="btn-pass">无</div></div>
+        <!-- 最上方：对家 -->
+        <div class="row-top">
+            <div class="player top-player">
+                <div class="player-name">对家</div>
+                <div class="cards-container">
+                    <div class="card" data-player="top" data-type="big"><div class="label">大王</div><div class="status">-</div><div class="btn-pass">无</div></div>
+                    <div class="card" data-player="top" data-type="small"><div class="label">小王</div><div class="status">-</div><div class="btn-pass">无</div></div>
+                    <div class="card" data-player="top" data-type="single"><div class="label">单牌</div><div class="status">-</div><div class="btn-pass">无</div></div>
+                    <div class="card" data-player="top" data-type="pair"><div class="label">对子</div><div class="status">-</div><div class="btn-pass">无</div></div>
+                    <div class="card" data-player="top" data-type="triple"><div class="label">三张</div><div class="status">-</div><div class="btn-pass">无</div></div>
+                </div>
             </div>
         </div>
 
-        <!-- 上家 -->
-        <div class="player left-player">
-            <div class="player-name">上家</div>
-            <div class="cards-container">
-                <div class="card" data-player="left" data-type="big"><div class="label">大王</div><div class="status">-</div><div class="btn-pass">无</div></div>
-                <div class="card" data-player="left" data-type="small"><div class="label">小王</div><div class="status">-</div><div class="btn-pass">无</div></div>
-                <div class="card" data-player="left" data-type="single"><div class="label">单牌</div><div class="status">-</div><div class="btn-pass">无</div></div>
-                <div class="card" data-player="left" data-type="pair"><div class="label">对子</div><div class="status">-</div><div class="btn-pass">无</div></div>
-                <div class="card" data-player="left" data-type="triple"><div class="label">三张</div><div class="status">-</div><div class="btn-pass">无</div></div>
+        <!-- 下方：左为下家，右为下家 -->
+        <div class="row-bottom">
+            <div class="player left-player">
+                <div class="player-name">上家</div>
+                <div class="cards-container">
+                    <div class="card" data-player="left" data-type="big"><div class="label">大王</div><div class="status">-</div><div class="btn-pass">无</div></div>
+                    <div class="card" data-player="left" data-type="small"><div class="label">小王</div><div class="status">-</div><div class="btn-pass">无</div></div>
+                    <div class="card" data-player="left" data-type="single"><div class="label">单</div><div class="status">-</div><div class="btn-pass">无</div></div>
+                    <div class="card" data-player="left" data-type="pair"><div class="label">对</div><div class="status">-</div><div class="btn-pass">无</div></div>
+                    <div class="card" data-player="left" data-type="triple"><div class="label">三</div><div class="status">-</div><div class="btn-pass">无</div></div>
+                </div>
             </div>
-        </div>
-
-        <!-- 下家 -->
-        <div class="player right-player">
-            <div class="player-name">下家</div>
-            <div class="cards-container">
-                <div class="card" data-player="right" data-type="big"><div class="label">大王</div><div class="status">-</div><div class="btn-pass">无</div></div>
-                <div class="card" data-player="right" data-type="small"><div class="label">小王</div><div class="status">-</div><div class="btn-pass">无</div></div>
-                <div class="card" data-player="right" data-type="single"><div class="label">单牌</div><div class="status">-</div><div class="btn-pass">无</div></div>
-                <div class="card" data-player="right" data-type="pair"><div class="label">对子</div><div class="status">-</div><div class="btn-pass">无</div></div>
-                <div class="card" data-player="right" data-type="triple"><div class="label">三张</div><div class="status">-</div><div class="btn-pass">无</div></div>
+            <div class="player right-player">
+                <div class="player-name">下家</div>
+                <div class="cards-container">
+                    <div class="card" data-player="right" data-type="big"><div class="label">大王</div><div class="status">-</div><div class="btn-pass">无</div></div>
+                    <div class="card" data-player="right" data-type="small"><div class="label">小王</div><div class="status">-</div><div class="btn-pass">无</div></div>
+                    <div class="card" data-player="right" data-type="single"><div class="label">单</div><div class="status">-</div><div class="btn-pass">无</div></div>
+                    <div class="card" data-player="right" data-type="pair"><div class="label">对</div><div class="status">-</div><div class="btn-pass">无</div></div>
+                    <div class="card" data-player="right" data-type="triple"><div class="label">三</div><div class="status">-</div><div class="btn-pass">无</div></div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // 只记录对家、上家、下家
         const players = ['top', 'left', 'right'];
         const types = ['big', 'small', 'single', 'pair', 'triple'];
 
-        // 初始化数据结构。'-'代表未操作, '0'代表无(不出), 数字代表出牌次数
-        let data = JSON.parse(localStorage.getItem('guandanDataV5')) || {}; // 升级版本号防旧数据干扰
+        let data = JSON.parse(localStorage.getItem('guandanDataV7')) || {}; 
 
         function initData() {
             let obj = {};
@@ -112,11 +119,8 @@
             return obj;
         }
 
-        if (Object.keys(data).length === 0) {
-            data = initData();
-        }
+        if (Object.keys(data).length === 0) data = initData();
 
-        // 渲染界面
         function render() {
             document.querySelectorAll('.card').forEach(card => {
                 const p = card.dataset.player;
@@ -125,41 +129,28 @@
                 const statusDiv = card.querySelector('.status');
                 
                 statusDiv.innerText = statusVal;
-                
-                // 更改颜色样式
                 card.classList.remove('status-0', 'status-num');
-                if (statusVal === '0') {
-                    card.classList.add('status-0');
-                } else if (statusVal !== '-') {
-                    card.classList.add('status-num');
-                }
+                if (statusVal === '0') card.classList.add('status-0');
+                else if (statusVal !== '-') card.classList.add('status-num');
             });
         }
 
-        // 保存并渲染
         function saveAndRender() {
-            localStorage.setItem('guandanDataV5', JSON.stringify(data));
+            localStorage.setItem('guandanDataV7', JSON.stringify(data));
             render();
         }
 
-        // 点击卡片主体：数字加1
         document.querySelectorAll('.card').forEach(card => {
             card.addEventListener('click', function(e) {
                 if (e.target.classList.contains('btn-pass')) return;
-
                 const p = this.dataset.player;
                 const t = this.dataset.type;
                 let current = data[p][t];
-                
-                if (current === '-' || current === '0') {
-                    data[p][t] = 1;
-                } else {
-                    data[p][t] = parseInt(current) + 1;
-                }
+                if (current === '-' || current === '0') data[p][t] = 1;
+                else data[p][t] = parseInt(current) + 1;
                 saveAndRender();
             });
 
-            // 长按卡片主体：数字减1
             let timer;
             card.addEventListener('touchstart', function(e) {
                 if (e.target.classList.contains('btn-pass')) return;
@@ -172,30 +163,23 @@
                         data[p][t] = num > 1 ? num - 1 : '-';
                         saveAndRender();
                     }
-                }, 500);
+                }, 500); 
             });
             card.addEventListener('touchend', () => clearTimeout(timer));
             card.addEventListener('touchmove', () => clearTimeout(timer));
         });
 
-        // 点击“无”：变成0
         document.querySelectorAll('.btn-pass').forEach(btn => {
             btn.addEventListener('click', function(e) {
                 e.stopPropagation(); 
                 const card = this.parentElement;
                 const p = card.dataset.player;
                 const t = card.dataset.type;
-                
-                if (data[p][t] === '0') {
-                    data[p][t] = '-'; 
-                } else {
-                    data[p][t] = '0';
-                }
+                data[p][t] = (data[p][t] === '0') ? '-' : '0';
                 saveAndRender();
             });
         });
 
-        // 全部清零
         function resetAll() {
             if(confirm('确定要全部清零吗？')) {
                 data = initData();
@@ -203,7 +187,6 @@
             }
         }
 
-        // 首次渲染
         render();
     </script>
 </body>
